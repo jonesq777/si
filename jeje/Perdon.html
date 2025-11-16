@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Me perdonas?🥺</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #ff95c9;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    h1 {
+        margin-top: 80px;
+        color: white;
+        font-size: 40px;
+        text-shadow: 0 0 10px #ff44aa;
+    }
+
+    #buttons {
+        margin-top: 50px;
+    }
+
+    button {
+        font-size: 22px;
+        padding: 15px 40px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    #yes {
+        background: #ffffff;
+    }
+
+    #no {
+        background: #ff4f70;
+        position: absolute;
+    }
+
+    /* Corazones flotando */
+    .heart {
+        position: fixed;
+        bottom: -20px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 30px;
+        animation: floatUp 5s linear infinite;
+    }
+
+    @keyframes floatUp {
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        100% { transform: translateY(-120vh) scale(1.8); opacity: 0; }
+    }
+
+    /* Pantalla final */
+    #finalScreen {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #ffb5df;
+        text-align: center;
+        padding-top: 50px;
+        color: white;
+        font-size: 30px;
+    }
+
+    #finalScreen img {
+        width: 300px;
+        border-radius: 20px;
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+
+<!-- Imagen principal opcional -->
+<div id="apartadoImagen">
+    <img src="Imagen.jpg" width="300" height="300" alt="Mi Foto">
+</div>
+
+<h1>perdoname siiii? 💗</h1>
+
+<div id="buttons">
+    <button id="yes">Sí 💞</button>
+    <button id="no">No 😢</button>
+</div>
+
+<!-- Pantalla final -->
+<div id="finalScreen">
+    <p>Gracias, ya no te haré enojar mi amor💗</p>
+    <img src="Imagen2.jpg" alt="Foto final">
+</div>
+
+<!-- Música principal y final -->
+<audio id="musicaPrincipal" src="musica1.mp3" loop></audio>
+<audio id="musicaFinal" src="musica2.mp3" loop></audio>
+
+<script>
+/* ================================
+       EFECTO FADE OUT / FADE IN
+================================= */
+
+function fadeOut(audio, duration = 1500) {
+    return new Promise(resolve => {
+        let step = audio.volume / (duration / 50);
+        let fade = setInterval(() => {
+            if (audio.volume - step > 0) {
+                audio.volume -= step;
+            } else {
+                audio.volume = 0;
+                audio.pause();
+                clearInterval(fade);
+                resolve();
+            }
+        }, 50);
+    });
+}
+
+function fadeIn(audio, duration = 1500) {
+    return new Promise(resolve => {
+        audio.volume = 0;
+        audio.play();
+        let step = 1 / (duration / 50);
+        let fade = setInterval(() => {
+            if (audio.volume + step < 1) {
+                audio.volume += step;
+            } else {
+                audio.volume = 1;
+                clearInterval(fade);
+                resolve();
+            }
+        }, 50);
+    });
+}
+
+/* ================================
+         LÓGICA PRINCIPAL
+================================= */
+
+const musicaPrincipal = document.getElementById("musicaPrincipal");
+const musicaFinal = document.getElementById("musicaFinal");
+
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+const finalScreen = document.getElementById("finalScreen");
+
+// Activar música principal al primer clic
+document.addEventListener("click", () => {
+    if (musicaPrincipal.paused) {
+        musicaPrincipal.volume = 1;
+        musicaPrincipal.play().catch(() => {});
+    }
+}, { once: true });
+
+// Botón NO que huye
+noBtn.addEventListener("mouseover", () => {
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 100);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+});
+
+// Cuando dice SÍ
+yesBtn.addEventListener("click", async () => {
+
+    // Cambiar visualmente de pantalla
+    document.body.innerHTML = "";
+    document.body.style.background = "#ffb5df";
+    document.body.appendChild(finalScreen);
+    finalScreen.style.display = "block";
+
+    // Cambio de música con efectos
+    await fadeOut(musicaPrincipal);
+    await fadeIn(musicaFinal);
+});
+
+// Corazones flotando
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "💗";
+
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = (3 + Math.random() * 3) + "s";
+
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 6000);
+}
+
+setInterval(createHeart, 300);
+</script>
+
+</body>
+</html>
